@@ -17,6 +17,25 @@
 extern "C" {
 #endif
 
+  /* Create a snapshot of the current memory state.
+   * \return snapshot id
+   */
+  int klee_snapshot();
+
+  /* Restore a snapshot of the memory state.
+   * \param snapshot_id snapshot id to restore
+   */
+  void klee_restore(int snapshot_id);
+
+  /* Compare two snapshots of the memory state.
+   * \param snapshot_id1 first snapshot id
+   * \param snapshot_id2 second snapshot id
+   * \param ptr pointer to memory location to compare
+   */
+  void klee_compare(int snapshot_id1, int snapshot_id2, void *ptr);
+
+  //void klee_eval(klee::ref<klee::Expr> e);
+
   /* Add an accesible memory object at a user specified location. It
    * is the users responsibility to make sure that these memory
    * objects do not overlap. These memory objects will also

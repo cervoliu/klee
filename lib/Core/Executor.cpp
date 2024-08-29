@@ -5061,13 +5061,13 @@ void Executor::dumpStates() {
 
 
 void Executor::dumpMemory(const ExecutionState &state) {
-  auto os = interpreterHandler->openOutputFile("mem.txt");
+  auto outstream = interpreterHandler->openOutputFile("mem.txt");
 
-  if (os) {
+  if (outstream) {
     for (auto mmap : state.addressSpace.objects) {
       const MemoryObject *mo = mmap.first;
       ref<ObjectState> os = mmap.second;
-      os->print();
+      os->print(*outstream);
     }
   }
 }

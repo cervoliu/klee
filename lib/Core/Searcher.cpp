@@ -576,3 +576,37 @@ void InterleavedSearcher::printName(llvm::raw_ostream &os) {
     searcher->printName(os);
   os << "</InterleavedSearcher>\n";
 }
+
+
+// Fake
+// bool areExecutionStatesEquivalent(const ExecutionState &state1, const ExecutionState &state2) {
+//   const auto &memObjects1 = state1.addressSpace.objects;
+//   const auto &memObjects2 = state2.addressSpace.objects;
+
+//   if (memObjects1.size() != memObjects2.size()) {
+//     return false;
+//   }
+
+//   auto it1 = memObjects1.begin();
+//   auto it2 = memObjects2.begin();
+//   for (; it1 != memObjects1.end() && it2 != memObjects2.end(); ++it1, ++it2) {
+//     const MemoryObject *mo1 = it1->first;
+//     const MemoryObject *mo2 = it2->first;
+//     if (mo1->size != mo2->size) {
+//       return false;
+//     }
+
+//     const ObjectState *os1 = it1->second.get();
+//     const ObjectState *os2 = it2->second.get();
+
+//     for (unsigned offset = 0; offset < mo1->size; ++offset) {
+//       ref<Expr> expr1 = os1->read8(offset);
+//       ref<Expr> expr2 = os2->read8(offset);
+//       if(expr1 != expr2) {
+//         return false;
+//       }
+//     }
+//   }
+
+//   return true;
+// }

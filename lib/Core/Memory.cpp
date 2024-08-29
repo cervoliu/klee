@@ -590,3 +590,25 @@ void ObjectState::print() const {
     llvm::errs() << "\t\t[" << un->index << "] = " << un->value << "\n";
   }
 }
+
+void ObjectState::print(llvm::raw_fd_ostream &os) {
+  os << "-- ObjectState --\n";
+  os << "\tMemoryObject ID: " << object->id << "\n";
+  os << "\tRoot Object: " << updates.root << "\n";
+  os << "\tSize: " << size << "\n";
+
+  os << "\tBytes:\n";
+  for (unsigned i=0; i<size; i++) {
+    os << "\t\t["<<i<<"]"
+               << " concrete? " << isByteConcrete(i)
+               << " known-sym? " << isByteKnownSymbolic(i)
+               << " unflushed? " << isByteUnflushed(i) << " = ";
+    ref<Expr> e = read8(i);
+    os << e << "\n";
+  }
+
+  os << "\tUpdates:\n";
+  for (const auto *un = updates.head.get(); un; un = un->next.get()) {
+    os << "\t\t[" << un->index << "] = " << un->value << "\n";
+  }
+}
