@@ -509,6 +509,8 @@ private:
   void dumpStates();
   void dumpExecutionTree();
 
+  void dumpMemory(const ExecutionState &state);
+
 public:
   Executor(llvm::LLVMContext &ctx, const InterpreterOptions &opts,
       InterpreterHandler *ie);
