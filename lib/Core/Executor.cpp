@@ -3767,6 +3767,8 @@ void Executor::terminateState(ExecutionState &state,
   interpreterHandler->incPathsExplored();
   executionTree->setTerminationType(state, reason);
 
+  dumpMemory(state);
+
   std::vector<ExecutionState *>::iterator it =
       std::find(addedStates.begin(), addedStates.end(), &state);
   if (it==addedStates.end()) {
@@ -5055,6 +5057,19 @@ void Executor::dumpStates() {
   }
 
   ::dumpStates = 0;
+}
+
+
+void Executor::dumpMemory(const ExecutionState &state) {
+  auto outstream = interpreterHandler->openOutputFile("mem.txt");
+
+  if (outstream) {
+    for (auto mmap : state.addressSpace.objects) {
+      const MemoryObject *mo = mmap.first;
+      ref<ObjectState> os = mmap.second;
+      os->print(*outstream);
+    }
+  }
 }
 
 ///

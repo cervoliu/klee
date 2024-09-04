@@ -6,6 +6,7 @@ Output/
 
 # commonly used as cmake build directory
 /build
+/build-dev
 
 cscope.*
 *~
@@ -30,6 +31,9 @@ lit.site.cfg
 autoconf/aclocal.m4
 autoconf/autom4te.cache/
 autom4te.cache/
+
+# ignore examples
+examples/
 
 # vscode files
 .vscode/
