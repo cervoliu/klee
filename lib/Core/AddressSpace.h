@@ -62,6 +62,11 @@ namespace klee {
     /// objects that we own.
     ///
     /// \invariant forall o in objects, o->copyOnWriteOwner <= cowKey
+
+    /// cervol: Holyshit, what the above really means is that when
+    /// o->copyOnWriteOwner == cowKey, then the object is ONLY owned by
+    /// this address space. Actually for those o->copyOnWriteOwner < cowKey,
+    /// they are shared with other address spaces. Damn unclear comments.
     MemoryMap objects;
 
     AddressSpace() : cowKey(1) {}
@@ -154,6 +159,9 @@ namespace klee {
     /// @return
     bool copyInConcrete(const MemoryObject *mo, const ObjectState *os,
                         uint64_t src_address, bool concretize);
+
+    /// Check if the object state is ONLY owned by this address space
+    bool checkOwnership(const ObjectState *os) const;
   };
 } // End klee namespace
 

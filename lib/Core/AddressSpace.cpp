@@ -373,6 +373,10 @@ bool AddressSpace::copyInConcrete(const MemoryObject *mo, const ObjectState *os,
   return true;
 }
 
+bool AddressSpace::checkOwnership(const ObjectState *os) const {
+  return os->copyOnWriteOwner == cowKey;
+}
+
 /***/
 
 bool MemoryObjectLT::operator()(const MemoryObject *a, const MemoryObject *b) const {
