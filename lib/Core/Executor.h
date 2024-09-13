@@ -510,6 +510,7 @@ private:
   void dumpExecutionTree();
 
   void dumpMemory(const ExecutionState &state);
+  void dumpPathInfo(const ExecutionState &state);
 
 public:
   Executor(llvm::LLVMContext &ctx, const InterpreterOptions &opts,

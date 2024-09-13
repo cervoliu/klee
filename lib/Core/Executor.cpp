@@ -3768,6 +3768,7 @@ void Executor::terminateState(ExecutionState &state,
   executionTree->setTerminationType(state, reason);
 
   dumpMemory(state);
+  dumpPathInfo(state);
 
   std::vector<ExecutionState *>::iterator it =
       std::find(addedStates.begin(), addedStates.end(), &state);
@@ -5061,15 +5062,31 @@ void Executor::dumpStates() {
 
 
 void Executor::dumpMemory(const ExecutionState &state) {
-  auto outstream = interpreterHandler->openOutputFile("mem.txt");
+  auto outstream = interpreterHandler->openOutputFile("mem" + std::to_string(state.id) + ".txt");
 
+  AddressSpace as = state.addressSpace;
   if (outstream) {
-    for (auto mmap : state.addressSpace.objects) {
+    *outstream << "Dumping Memories of State: " << state.id << "\n";
+    for (auto mmap : as.objects) {
       const MemoryObject *mo = mmap.first;
-      ref<ObjectState> os = mmap.second;
+      ObjectState *os = mmap.second.get();
+      //if (!as.checkOwnership(os)) continue;
       os->print(*outstream);
     }
   }
+}
+
+// cervol:
+// I feel like I am doing the exactly same thing as I did half a year ago
+void Executor::dumpPathInfo(const ExecutionState &state) {
+  auto outstream = interpreterHandler->openOutputFile("path" + std::to_string(state.id) + ".txt");
+  assert(outstream && "Failed to open path file");
+  // dump constraints
+  // *outstream << "Constraints:\n";
+  for (auto &c : state.constraints) {
+    *outstream << c << "\n";
+  }
+  //state.addressSpace.
 }
 
 ///

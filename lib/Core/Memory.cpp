@@ -594,17 +594,25 @@ void ObjectState::print() const {
 void ObjectState::print(llvm::raw_fd_ostream &os) {
   os << "-- ObjectState --\n";
   os << "\tMemoryObject ID: " << object->id << "\n";
+  os << "\tMemoryObject Name: " << object->name << "\n";
+  os << "\tMemoryObject Address: " << object->address << "\n";
+  std::string allocInfo;
+  object->getAllocInfo(allocInfo);
+  os << "\tMemoryObject AllocInfo: \n\t" << allocInfo << "\n";
   os << "\tRoot Object: " << updates.root << "\n";
-  os << "\tSize: " << size << "\n";
 
   os << "\tBytes:\n";
-  for (unsigned i=0; i<size; i++) {
+  unsigned threshold = 50;
+  for (unsigned i=0; i< std::min(threshold, size); i++) {
     os << "\t\t["<<i<<"]"
                << " concrete? " << isByteConcrete(i)
                << " known-sym? " << isByteKnownSymbolic(i)
                << " unflushed? " << isByteUnflushed(i) << " = ";
     ref<Expr> e = read8(i);
     os << e << "\n";
+  }
+  if(size > threshold) {
+    os << "\t\t... (only first " << threshold << " bytes shown)\n";
   }
 
   os << "\tUpdates:\n";
