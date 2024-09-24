@@ -28,6 +28,7 @@
 #include "klee/Support/OptionCategories.h"
 
 #include "klee/Support/CompilerWarning.h"
+#include "llvm/Support/FileSystem.h"
 DISABLE_WARNING_PUSH
 DISABLE_WARNING_DEPRECATED_DECLARATIONS
 #include "llvm/ADT/Twine.h"
@@ -522,11 +523,29 @@ void SpecialFunctionHandler::handlePosixPreferCex(ExecutionState &state,
 void SpecialFunctionHandler::handlePrintExpr(ExecutionState &state,
                                   KInstruction *target,
                                   std::vector<ref<Expr> > &arguments) {
-  assert(arguments.size()==2 &&
+  assert((arguments.size()==2 || arguments.size() == 3) &&
          "invalid number of arguments to klee_print_expr");
 
+  auto *outstream = &llvm::errs();
+  std::unique_ptr<llvm::raw_fd_ostream> file;
+
+  if (arguments.size() == 3) {
+    std::string filename = readStringAtAddress(state, arguments[2]);
+    std::error_code EC;
+    file = std::make_unique<llvm::raw_fd_ostream>(filename, EC,
+      llvm::sys::fs::CD_OpenAlways,
+      llvm::sys::fs::FA_Write,
+      llvm::sys::fs::OF_Text | llvm::sys::fs::OF_Append);
+    if (EC) {
+      executor.terminateStateOnError(state, "cannot open output file: " + EC.message(),
+                                     StateTerminationType::User);
+      return;
+    }
+    outstream = file.get(); // Set outstream to point to the file stream
+  }
+
   std::string msg_str = readStringAtAddress(state, arguments[0]);
-  llvm::errs() << msg_str << ":" << arguments[1] << "\n";
+  *outstream << msg_str << ":" << arguments[1] << "\n";
 }
 
 void SpecialFunctionHandler::handleSetForking(ExecutionState &state,
