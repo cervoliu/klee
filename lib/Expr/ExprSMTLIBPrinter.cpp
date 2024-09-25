@@ -536,6 +536,23 @@ void ExprSMTLIBPrinter::generateOutput() {
   printExit();
 }
 
+void ExprSMTLIBPrinter::generateConstraints() {
+  if (p == NULL || query == NULL || o == NULL) {
+    llvm::errs() << "ExprSMTLIBPrinter::generateConstraints() Can't print "
+                    "SMTLIBv2. Output or query bad!\n";
+    return;
+  }
+
+  // if (humanReadable)
+  //   printNotice();
+  // printOptions();
+  //printSetLogic();
+  //printArrayDeclarations();
+
+  for (const auto &constraint : query->constraints)
+    printAssert(constraint);
+}
+
 void ExprSMTLIBPrinter::printSetLogic() {
   *o << "(set-logic ";
   switch (logicToUse) {
