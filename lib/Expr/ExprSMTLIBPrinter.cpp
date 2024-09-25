@@ -553,6 +553,16 @@ void ExprSMTLIBPrinter::generateConstraints() {
     printAssert(constraint);
 }
 
+void ExprSMTLIBPrinter::generateExpr() {
+  if (p == NULL || query == NULL || o == NULL) {
+    llvm::errs() << "ExprSMTLIBPrinter::generateExpr() Can't print SMTLIBv2. "
+                    "Output or query bad!\n";
+    return;
+  }
+
+  printExpression(query->expr, SMTLIB_SORT::SORT_BITVECTOR);
+}
+
 void ExprSMTLIBPrinter::printSetLogic() {
   *o << "(set-logic ";
   switch (logicToUse) {

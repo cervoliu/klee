@@ -167,6 +167,9 @@ public:
   /// is set to false
   void generateConstraints();
 
+  /// Generate Expr only
+  void generateExpr();
+
   /// Set which SMTLIBv2 logic to use.
   /// This only affects what logic is used in the (set-logic <logic>) command.
   /// The rest of the printed SMTLIBv2 commands are the same regardless of the
