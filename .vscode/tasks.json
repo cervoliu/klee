@@ -1,0 +1,104 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Compile C Programs in examples directory",
+			"type": "shell",
+			"command": "clang",
+			"args": [
+				"-I", "${workspaceFolder}/include",
+				"-emit-llvm",
+				"-c", "-g", "-O0", "-Xclang",
+				"-disable-O0-optnone",
+				"${fileBasename}",
+				"-o",
+				"${fileBasenameNoExtension}.bc"
+			],
+			"group": {
+				"kind": "build"
+			},
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Generate Assembly from Bitcode",
+			"type": "shell",
+			"command": "llvm-dis",
+			"args": [
+				"${fileBasenameNoExtension}.bc",
+				"-o",
+				"${fileBasenameNoExtension}.ll"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"dependsOn": "Compile C Programs in examples directory",
+			"problemMatcher": []
+		},
+		{
+			"label": "Clean KLEE Output Directories",
+			"type": "shell",
+			"command": "rm",
+			"args": [
+				"-rf",
+				"./klee-out-*",
+				"./klee-last",
+				"${fileBasenameNoExtension}.out"
+			],
+			"group": {
+				"kind": "build",
+				"isDefault": false
+			},
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Run KLEE on Bitcode",
+			"type": "shell",
+			"command": "klee",
+			"args": [
+				"--write-kqueries",
+				"--write-smt2s",
+				"${fileBasenameNoExtension}.bc"
+			],
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": []
+		},
+		{
+			"label": "Clean & Compile & Run KLEE",
+			"type": "shell",
+			"command": "klee",
+			"args": [
+				"--write-kqueries",
+				"--write-smt2s",
+				"${fileBasenameNoExtension}.bc"
+			],
+			"group": {
+				"kind": "test",
+				"isDefault": true
+			},
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [],
+			"dependsOn": [
+				"Clean KLEE Output Directories",
+				"Compile C Programs in examples directory"
+			]
+		}
+	]
+}

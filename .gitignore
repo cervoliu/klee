@@ -35,5 +35,6 @@ autom4te.cache/
 # ignore examples
 examples/
 
-# vscode files
-.vscode/
+#clangd files
+.cache/
+compile_commands.json
