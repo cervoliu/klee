@@ -547,7 +547,7 @@ void ExprSMTLIBPrinter::generateConstraints() {
   //   printNotice();
   // printOptions();
   //printSetLogic();
-  //printArrayDeclarations();
+  printArrayDeclarations();
 
   for (const auto &constraint : query->constraints)
     printAssert(constraint);
@@ -560,6 +560,7 @@ void ExprSMTLIBPrinter::generateExpr() {
     return;
   }
 
+  printArrayDeclarations();
   printExpression(query->expr, SMTLIB_SORT::SORT_BITVECTOR);
 }
 

@@ -15,6 +15,8 @@
 #include "ExecutionState.h"
 #include "ExecutionTree.h"
 #include "ExternalDispatcher.h"
+#include "klee/Expr/Constraints.h"
+#include "klee/Solver/Solver.h"
 #if LLVM_VERSION_CODE <= LLVM_VERSION(14, 0)
 #include "GetElementPtrTypeIterator.h"
 #endif
@@ -5062,31 +5064,44 @@ void Executor::dumpStates() {
 
 
 void Executor::dumpMemory(const ExecutionState &state) {
-  auto outstream = interpreterHandler->openOutputFile("mem" + std::to_string(state.id) + ".txt");
+  auto outstream = interpreterHandler->openOutputFile("value" + std::to_string(state.id) + ".smt2");
+  if (!outstream) {
+    klee_warning("dumpMemory: unable to open file");
+    return;
+  }
+
+  ExprSMTLIBPrinter printer;
+  std::string Str;
 
   AddressSpace as = state.addressSpace;
-  if (outstream) {
-    *outstream << "Dumping Memories of State: " << state.id << "\n";
-    for (auto mmap : as.objects) {
-      const MemoryObject *mo = mmap.first;
-      ObjectState *os = mmap.second.get();
-      //if (!as.checkOwnership(os)) continue;
-      os->print(*outstream);
-    }
+
+  for (auto obj : as.objects) {
+    const MemoryObject *mo = obj.first;
+    /// temporary hack here, should exist a better way
+    if(mo->name == "unnamed") continue;
+    *outstream << "; " << mo->name << ":\n";
+    ObjectState *os = obj.second.get();
+    ref<Expr> val = os->read(0, mo->size * 8);
+
+    Str.clear();
+    llvm::raw_string_ostream info(Str);
+    printer.setOutput(info);
+    printer.setQuery(Query(ConstraintSet(), val));
+    printer.generateExpr();
+    *outstream << info.str() << "\n";
   }
 }
 
 // cervol:
 // I feel like I am doing the exactly same thing as I did half a year ago
 void Executor::dumpPathInfo(const ExecutionState &state) {
-  auto outstream = interpreterHandler->openOutputFile("path" + std::to_string(state.id) + ".txt");
-  assert(outstream && "Failed to open path file");
-  // dump constraints
-  // *outstream << "Constraints:\n";
-  for (auto &c : state.constraints) {
-    *outstream << c << "\n";
-  }
-  //state.addressSpace.
+  auto outstream = interpreterHandler->openOutputFile("path" + std::to_string(state.id) + ".smt2");
+  ExprSMTLIBPrinter printer;
+  printer.setOutput(*outstream);
+  
+  Query query(state.constraints, ConstantExpr::alloc(0, Expr::Bool));
+  printer.setQuery(query);
+  printer.generateConstraints();
 }
 
 ///
