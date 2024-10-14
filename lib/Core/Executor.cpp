@@ -5081,14 +5081,16 @@ void Executor::dumpMemory(const ExecutionState &state) {
     if(mo->name == "unnamed") continue;
     *outstream << "; " << mo->name << ":\n";
     ObjectState *os = obj.second.get();
-    ref<Expr> val = os->read(0, mo->size * 8);
-
-    Str.clear();
-    llvm::raw_string_ostream info(Str);
-    printer.setOutput(info);
-    printer.setQuery(Query(ConstraintSet(), val));
-    printer.generateExpr();
-    *outstream << info.str() << "\n";
+    for (unsigned k = 0; k < mo->size; ++k) {
+      ref<Expr> val = os->read8(k);
+      Str.clear();
+      llvm::raw_string_ostream info(Str);
+      printer.setOutput(info);
+      printer.setQuery(Query(ConstraintSet(), val));
+      printer.generateExpr();
+      *outstream << ";   " << k << "\n";
+      *outstream << info.str() << "\n";
+    }
   }
 }
 
