@@ -16,7 +16,7 @@
         "-DKLEE_LIBCXX_BC_PATH=${env:HOME}/klee/klee_deps/libcxx/libc++-install-130/lib",
         "-DENABLE_KLEE_EH_CXX=ON",
         "-DKLEE_LIBCXXABI_SRC_DIR=${env:HOME}/llvm-project/libcxxabi",
-        "-DENABLE_TCMALLOC=OFF",
+        "-DENABLE_TCMALLOC=ON",
         "-DCMAKE_BUILD_TYPE=Debug",
         "-DCMAKE_EXPORT_COMPILE_COMMANDS=1"
     ],
