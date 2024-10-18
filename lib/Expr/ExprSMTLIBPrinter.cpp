@@ -548,7 +548,7 @@ void ExprSMTLIBPrinter::generateConstraints() {
   // printOptions();
   //printSetLogic();
   //printArrayDeclarations();
-
+  setAbbreviationMode(AbbreviationMode::ABBR_NONE);
   for (const auto &constraint : query->constraints)
     printAssert(constraint);
 }
@@ -561,6 +561,7 @@ void ExprSMTLIBPrinter::generateExpr() {
   }
 
   //printArrayDeclarations();
+  setAbbreviationMode(AbbreviationMode::ABBR_NONE);
   printExpression(query->expr, SMTLIB_SORT::SORT_BITVECTOR);
 }
 
